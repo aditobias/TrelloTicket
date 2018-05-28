@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.oocl.trello.ticket.view.MainWindow">
+  <grid id="27dc6" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties>
+      <minimumSize width="250" height="100"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <tabbedpane id="6a8b5" binding="mainTabbedPanel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <minimum-size width="250" height="100"/>
+            <preferred-size width="200" height="200"/>
+          </grid>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="2d4c5" binding="mainPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <tabbedpane title="Main"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <grid id="83490" binding="configPanel" layout-manager="FormLayout">
+                <rowspec value="center:d:noGrow"/>
+                <colspec value="fill:d:grow"/>
+                <colspec value="left:4dlu:noGrow"/>
+                <colspec value="fill:d:noGrow"/>
+                <colspec value="left:4dlu:noGrow"/>
+                <colspec value="fill:d:noGrow"/>
+                <colspec value="left:4dlu:noGrow"/>
+                <colspec value="fill:d:noGrow"/>
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="8974e" class="javax.swing.JTextField" binding="minutesTextField" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <minimumSize width="50" height="24"/>
+                    </properties>
+                  </component>
+                  <component id="f0b25" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <labelFor value="8974e"/>
+                      <text value="Minutes"/>
+                    </properties>
+                  </component>
+                  <component id="58c74" class="javax.swing.JButton" binding="runButton" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Run"/>
+                    </properties>
+                  </component>
+                  <component id="8b4e" class="javax.swing.JButton" binding="stopButton" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Stop"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="90a0c" binding="mainTabbed" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <tabbedpane id="c0225" binding="tabbedPane1" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="200" height="200"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <grid id="a16fd" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <tabbedpane title="Console"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <scrollpane id="81506">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                            <border type="none"/>
+                            <children>
+                              <component id="8e65e" class="javax.swing.JTextArea" binding="consoleTextArea">
+                                <constraints/>
+                                <properties>
+                                  <background color="-16317429"/>
+                                  <foreground color="-13445086"/>
+                                  <inheritsPopupMenu value="false"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </scrollpane>
+                        </children>
+                      </grid>
+                      <grid id="220bc" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <tabbedpane title="Config"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="678d7" class="javax.swing.JTable" binding="configTable">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="50"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <surrendersFocusOnKeystroke value="false"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                    </children>
+                  </tabbedpane>
+                </children>
+              </grid>
+            </children>
+          </grid>
+          <grid id="cd908" binding="memberPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <tabbedpane title="Member"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </grid>
+        </children>
+      </tabbedpane>
+    </children>
+  </grid>
+</form>
