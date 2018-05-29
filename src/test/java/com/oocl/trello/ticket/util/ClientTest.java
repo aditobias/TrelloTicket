@@ -4,13 +4,14 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class UtilTest {
+public class ClientTest {
 
     @Test
-    public void isCredentialOkay() {
+    public void get() {
+
     }
 
     @Test
-    public void readConfig() {
+    public void post() {
     }
 }
