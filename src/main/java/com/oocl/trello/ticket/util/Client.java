@@ -20,16 +20,17 @@ import java.util.List;
 public class Client {
     public final static Logger logger = Logger.getLogger(Client.class);
 
-    public static void get(String url) {
+    public static HttpResponse get(String url) {
         try {
             HttpClient client = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet(url);
-            HttpResponse response = client.execute(request);
+            return client.execute(request);
         } catch (IOException e) {
             e.printStackTrace();
             logger.error(e);
         }
 
+        return null;
     }
 
     public void post(String url) {

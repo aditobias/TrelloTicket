@@ -19,8 +19,6 @@ public class MainWindowView extends JFrame {
     private JPanel ListPanel;
     private JPanel membersPanel;
     private JPanel labelPanel;
-    private JRadioButton radioButton1;
-    private JCheckBox checkBox3;
 
     public MainWindowView() {
         setContentPane(mainTabbedPanel);

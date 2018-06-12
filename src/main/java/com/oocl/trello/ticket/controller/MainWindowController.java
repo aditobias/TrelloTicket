@@ -1,32 +1,61 @@
 package com.oocl.trello.ticket.controller;
 
-import com.intellij.uiDesigner.core.GridConstraints;
+
+import com.oocl.trello.ticket.model.Column;
+import com.oocl.trello.ticket.model.Config;
+import com.oocl.trello.ticket.model.Label;
+import com.oocl.trello.ticket.model.User;
+import com.oocl.trello.ticket.util.Util;
 import com.oocl.trello.ticket.view.MainWindowView;
 
 import javax.swing.*;
-import java.awt.*;
+import java.util.List;
+
 
 public class MainWindowController {
 
-    MainWindowView mainWindowView;
+    private MainWindowView mainWindowView;
+
     public MainWindowController(MainWindowView mainWindowView) {
         this.mainWindowView = mainWindowView;
+        Config config = Util.getConfig();
+
         initController();
     }
 
     private void initController() {
-        JCheckBox checkBox3 = new JCheckBox("testasdasd");
-        JCheckBox checkBox1 = new JCheckBox("testasdasd");
-        JCheckBox checkBox2 = new JCheckBox("testasdasd");
-        JCheckBox checkBox4 = new JCheckBox("testasdasd");
+        List<Label> trelloLabels = Util.getTrelloBoardLabels();
+        List<User> trelloUsers = Util.getTrelloBoardMembers();
+        List<Column> trelloColumns = Util.getTrelloColumns();
 
         JPanel labelPanel = this.mainWindowView.getLabelPanel();
-//        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
-        labelPanel.add(checkBox1);
-//        labelPanel.add(checkBox2);
-//        labelPanel.add(checkBox3);
-//        labelPanel.add(checkBox4);
+        JPanel memberPanel = this.mainWindowView.getMembersPanel();
+        JPanel listPanel = this.mainWindowView.getListPanel();
+
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
+        memberPanel.setLayout(new BoxLayout(memberPanel, BoxLayout.PAGE_AXIS));
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.PAGE_AXIS));
+
+        if (trelloColumns != null) {
+            for (Column trelloColumn : trelloColumns) {
+                listPanel.add( new JRadioButton(trelloColumn.getName()));
+            }
+        }
+
+        if (trelloLabels != null) {
+            for (Label trelloLabel : trelloLabels) {
+                labelPanel.add(new JCheckBox(trelloLabel.getDisplayName()));
+            }
+        }
+
+        if (trelloUsers != null) {
+            for (User trelloUser : trelloUsers) {
+                memberPanel.add(new JCheckBox(trelloUser.getFullName()));
+            }
+        }
+
 
     }
+
 
 }

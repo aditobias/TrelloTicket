@@ -1,6 +1,6 @@
 package com.oocl.trello.ticket.model;
 
-public class List {
+public class Column {
     private String id;
     private String name;
     private String board_id;

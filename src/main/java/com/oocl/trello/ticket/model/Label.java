@@ -37,4 +37,8 @@ public class Label {
     public void setColor(String color) {
         this.color = color;
     }
+
+    public String getDisplayName(){
+        return this.name + " - " + this.color;
+    }
 }
