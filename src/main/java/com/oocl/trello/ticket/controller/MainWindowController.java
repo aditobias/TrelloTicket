@@ -1,6 +1,7 @@
 package com.oocl.trello.ticket.controller;
 
 
+import com.oocl.trello.ticket.facade.TrelloFacade;
 import com.oocl.trello.ticket.model.Column;
 import com.oocl.trello.ticket.model.Config;
 import com.oocl.trello.ticket.model.Label;
@@ -15,18 +16,19 @@ import java.util.List;
 public class MainWindowController {
 
     private MainWindowView mainWindowView;
+    private TrelloFacade trelloFacade;
 
     public MainWindowController(MainWindowView mainWindowView) {
         this.mainWindowView = mainWindowView;
         Config config = Util.getConfig();
-
+        this.trelloFacade = new TrelloFacade(config);
         initController();
     }
 
     private void initController() {
-        List<Label> trelloLabels = Util.getTrelloBoardLabels();
-        List<User> trelloUsers = Util.getTrelloBoardMembers();
-        List<Column> trelloColumns = Util.getTrelloColumns();
+        List<Label> trelloLabels = this.trelloFacade.getTrelloBoardLabels();
+        List<User> trelloUsers = this.trelloFacade.getTrelloBoardMembers();
+        List<Column> trelloColumns = this.trelloFacade.getTrelloColumns();
 
         JPanel labelPanel = this.mainWindowView.getLabelPanel();
         JPanel memberPanel = this.mainWindowView.getMembersPanel();
@@ -37,9 +39,15 @@ public class MainWindowController {
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.PAGE_AXIS));
 
         if (trelloColumns != null) {
+            ButtonGroup buttonGroup = new ButtonGroup();
+
             for (Column trelloColumn : trelloColumns) {
-                listPanel.add( new JRadioButton(trelloColumn.getName()));
+                JRadioButton radio = new JRadioButton(trelloColumn.getName());
+                buttonGroup.add(radio);
+                listPanel.add(radio);
             }
+
+
         }
 
         if (trelloLabels != null) {
@@ -50,7 +58,7 @@ public class MainWindowController {
 
         if (trelloUsers != null) {
             for (User trelloUser : trelloUsers) {
-                memberPanel.add(new JCheckBox(trelloUser.getFullName()));
+                memberPanel.add(new JCheckBox(trelloUser.getDisplayName()));
             }
         }
 

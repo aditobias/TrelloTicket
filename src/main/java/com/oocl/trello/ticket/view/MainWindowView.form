@@ -52,6 +52,7 @@
                     </constraints>
                     <properties>
                       <minimumSize width="50" height="24"/>
+                      <text value="5"/>
                     </properties>
                   </component>
                   <component id="f0b25" class="javax.swing.JLabel">
@@ -128,26 +129,6 @@
                           </scrollpane>
                         </children>
                       </grid>
-                      <grid id="220bc" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                        <margin top="0" left="0" bottom="0" right="0"/>
-                        <constraints>
-                          <tabbedpane title="Config"/>
-                        </constraints>
-                        <properties/>
-                        <border type="none"/>
-                        <children>
-                          <component id="678d7" class="javax.swing.JTable" binding="configTable">
-                            <constraints>
-                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="50"/>
-                              </grid>
-                            </constraints>
-                            <properties>
-                              <surrendersFocusOnKeystroke value="false"/>
-                            </properties>
-                          </component>
-                        </children>
-                      </grid>
                     </children>
                   </tabbedpane>
                 </children>
@@ -205,8 +186,34 @@
               </scrollpane>
             </children>
           </grid>
+          <grid id="c458e" layout-manager="FormLayout">
+            <rowspec value="center:d:noGrow"/>
+            <colspec value="fill:d:noGrow"/>
+            <constraints>
+              <tabbedpane title="Feature"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="956c9" class="javax.swing.JButton" binding="button1" default-binding="true">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Button"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
         </children>
       </tabbedpane>
     </children>
   </grid>
+  <buttonGroups>
+    <group name="buttonGroup1">
+      <member id="1be75"/>
+      <member id="a1b04"/>
+    </group>
+  </buttonGroups>
 </form>

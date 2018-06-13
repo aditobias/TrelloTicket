@@ -19,6 +19,7 @@ public class MainWindowView extends JFrame {
     private JPanel ListPanel;
     private JPanel membersPanel;
     private JPanel labelPanel;
+    private JButton button1;
 
     public MainWindowView() {
         setContentPane(mainTabbedPanel);
