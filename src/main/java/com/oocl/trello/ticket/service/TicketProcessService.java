@@ -1,9 +1,9 @@
-package com.oocl.trello.ticket.facade;
+package com.oocl.trello.ticket.service;
 
 import com.oocl.trello.ticket.model.Ticket;
 
-public class TicketProcessFacade {
-    public TicketProcessFacade() {
+public class TicketProcessService {
+    public TicketProcessService() {
 
     }
 

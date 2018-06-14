@@ -1,7 +1,7 @@
 package com.oocl.trello.ticket.controller;
 
 
-import com.oocl.trello.ticket.facade.TrelloFacade;
+import com.oocl.trello.ticket.service.TrelloService;
 import com.oocl.trello.ticket.model.Column;
 import com.oocl.trello.ticket.model.Config;
 import com.oocl.trello.ticket.model.Label;
@@ -16,19 +16,19 @@ import java.util.List;
 public class MainWindowController {
 
     private MainWindowView mainWindowView;
-    private TrelloFacade trelloFacade;
+    private TrelloService trelloService;
 
     public MainWindowController(MainWindowView mainWindowView) {
         this.mainWindowView = mainWindowView;
         Config config = Util.getConfig();
-        this.trelloFacade = new TrelloFacade(config);
+        this.trelloService = new TrelloService(config);
         initController();
     }
 
     private void initController() {
-        List<Label> trelloLabels = this.trelloFacade.getTrelloBoardLabels();
-        List<User> trelloUsers = this.trelloFacade.getTrelloBoardMembers();
-        List<Column> trelloColumns = this.trelloFacade.getTrelloColumns();
+        List<Label> trelloLabels = this.trelloService.getTrelloBoardLabels();
+        List<User> trelloUsers = this.trelloService.getTrelloBoardMembers();
+        List<Column> trelloColumns = this.trelloService.getTrelloColumns();
 
         JPanel labelPanel = this.mainWindowView.getLabelPanel();
         JPanel memberPanel = this.mainWindowView.getMembersPanel();

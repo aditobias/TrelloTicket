@@ -1,4 +1,4 @@
-package com.oocl.trello.ticket.facade;
+package com.oocl.trello.ticket.service;
 
 import com.google.gson.Gson;
 import com.oocl.trello.ticket.model.Column;
@@ -17,11 +17,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrelloFacade {
+public class TrelloService {
 
     private final Config config;
 
-    public TrelloFacade(Config config) {
+    public TrelloService(Config config) {
         this.config = config;
     }
 
