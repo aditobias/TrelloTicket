@@ -46,8 +46,6 @@ public class MainWindowController {
                 buttonGroup.add(radio);
                 listPanel.add(radio);
             }
-
-
         }
 
         if (trelloLabels != null) {

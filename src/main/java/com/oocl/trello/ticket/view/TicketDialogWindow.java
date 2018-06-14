@@ -30,7 +30,7 @@ public class TicketDialogWindow extends JDialog {
         setTitle("Ticket Details");
         pack();
         getRootPane().setDefaultButton(buttonOK);
-        setSize(400,300);
+        setSize(650,300);
         setVisible(true);
     }
 

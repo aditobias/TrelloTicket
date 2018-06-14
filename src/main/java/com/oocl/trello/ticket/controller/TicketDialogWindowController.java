@@ -1,5 +1,9 @@
 package com.oocl.trello.ticket.controller;
 
+import com.oocl.trello.ticket.model.Config;
+import com.oocl.trello.ticket.model.Ticket;
+import com.oocl.trello.ticket.service.TicketProcessService;
+import com.oocl.trello.ticket.util.Util;
 import com.oocl.trello.ticket.view.MainWindowView;
 import com.oocl.trello.ticket.view.TicketDialogWindow;
 
@@ -9,9 +13,12 @@ import java.awt.event.*;
 public class TicketDialogWindowController {
 
     TicketDialogWindow ticketDialogWindow;
+    TicketProcessService ticketProcessService;
 
     public TicketDialogWindowController(TicketDialogWindow ticketDialogWindow) {
         this.ticketDialogWindow = ticketDialogWindow;
+        Config config = Util.getConfig();
+        this.ticketProcessService = new TicketProcessService(config);
         initController();
     }
 
@@ -28,20 +35,30 @@ public class TicketDialogWindowController {
             }
         });
 
-        // call onCancel() when cross is clicked
-
         this.ticketDialogWindow.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onCancel();
             }
         });
 
-        // call onCancel() on ESCAPE
         this.ticketDialogWindow.getContentPane().registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+
+        Ticket ticket = this.ticketProcessService.getTicketFromPortal().get(0);
+
+        this.ticketDialogWindow.getNumberTextField().setText(ticket.getNumber());
+        this.ticketDialogWindow.getCategoryTextField().setText(ticket.getCategory());
+        this.ticketDialogWindow.getLinkTextField().setText(ticket.getLink());
+        this.ticketDialogWindow.getSeverityTextField().setText(ticket.getSeverity());
+        this.ticketDialogWindow.getSubjectTextField().setText(ticket.getSubject());
+        this.ticketDialogWindow.getStatusTextField().setText(ticket.getStatus());
+        this.ticketDialogWindow.getResponsiblePartyTextField().setText(ticket.getResponseParty());
+        this.ticketDialogWindow.getCreationDateTextField().setText(ticket.getCreateDate());
+
     }
 
     private void onOK() {
