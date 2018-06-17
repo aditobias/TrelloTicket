@@ -1,10 +1,7 @@
 package com.oocl.trello.ticket.service;
 
 import com.google.gson.Gson;
-import com.oocl.trello.ticket.model.Column;
-import com.oocl.trello.ticket.model.Config;
-import com.oocl.trello.ticket.model.Label;
-import com.oocl.trello.ticket.model.User;
+import com.oocl.trello.ticket.model.*;
 import com.oocl.trello.ticket.util.Client;
 import org.apache.http.HttpResponse;
 import org.json.JSONArray;
@@ -129,6 +126,42 @@ public class TrelloService {
                 }
             }
             return columns;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public List<Card> getTrelloCards(){
+        try {
+            List<Card> cards = new ArrayList<>();
+            String URL = MessageFormat.format("https://api.trello.com/1/boards/{0}/cards?key={1}&token={2}", this.config.getBoard(), this.config.getKey(), this.config.getToken());
+            HttpResponse response = Client.get(URL);
+
+            BufferedReader rd = null;
+            if (response != null) {
+                rd = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent()));
+            }
+
+            StringBuilder result = new StringBuilder();
+            String output;
+            if (rd != null) {
+                while ((output = rd.readLine()) != null) {
+                    result.append(output);
+
+                    JSONArray array = new JSONArray(output);
+                    Gson gson = new Gson();
+                    for(int i = 0 ; i < array.length() ; i++){
+                        JSONObject cardObject = array.getJSONObject(i);
+                        Card card = gson.fromJson(cardObject.toString(), Card.class);
+                        cards.add(card);
+                    }
+                }
+            }
+            return cards;
 
         } catch (IOException e) {
             e.printStackTrace();

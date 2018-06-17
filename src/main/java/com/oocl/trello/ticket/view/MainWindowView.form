@@ -80,6 +80,7 @@
                       <forms/>
                     </constraints>
                     <properties>
+                      <enabled value="false"/>
                       <text value="Stop"/>
                     </properties>
                   </component>

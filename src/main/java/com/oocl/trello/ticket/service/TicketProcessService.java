@@ -4,7 +4,8 @@ import com.oocl.trello.ticket.model.Config;
 import com.oocl.trello.ticket.model.Ticket;
 import com.oocl.trello.ticket.util.Client;
 
-import java.io.IOException;
+import javax.swing.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,35 +18,43 @@ public class TicketProcessService {
         this.config = config;
     }
 
-    public List<Ticket> getTicketFromPortal(){
+    public List<Ticket> getTicketFromPortal() throws IOException {
 
         List<Ticket> tickets = new ArrayList<>();
 
-        try {
 
-            String source = Client.getURLSource(this.config.getUrl());
-            Pattern rowStylePattern = Pattern.compile("\\<tr class=\"RowStyle\">(.*?)\\</tr>");
-            Pattern alternatingRowStylePattern = Pattern.compile("\\<tr class=\"AlternatingRowStyle\">(.*?)\\</tr>");
-            getTicketInformationInHTML(tickets, rowStylePattern.matcher(source));
-            getTicketInformationInHTML(tickets, alternatingRowStylePattern.matcher(source));
+//            String source = Client.getURLSource(this.config.getUrl());
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        File file = new File("sample.txt");
+        FileReader fileReader = new FileReader(file);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        StringBuffer stringBuffer = new StringBuffer();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuffer.append(line);
+            stringBuffer.append("\n");
         }
+        fileReader.close();
+        String source = stringBuffer.toString();
+
+        Pattern rowStylePattern = Pattern.compile("\\<tr class=\"RowStyle\">(.*?)\\</tr>");
+        Pattern alternatingRowStylePattern = Pattern.compile("\\<tr class=\"AlternatingRowStyle\">(.*?)\\</tr>");
+        getTicketInformationInHTML(tickets, rowStylePattern.matcher(source));
+        getTicketInformationInHTML(tickets, alternatingRowStylePattern.matcher(source));
+
+
         return tickets;
     }
 
     private void getTicketInformationInHTML(List<Ticket> tickets, Matcher m) {
-        while(m.find())
-        {
+        while (m.find()) {
 
             Pattern p1 = Pattern.compile("\\<td .*?>(.*?)\\</td>");
             Matcher m1 = p1.matcher(m.group(1));
 
             int index = 0;
             Ticket ticket = new Ticket();
-            while(m1.find())
-            {
+            while (m1.find()) {
                 switch (index) {
                     case 0:
                         String str = m.group(1);

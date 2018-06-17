@@ -9,6 +9,7 @@ import com.oocl.trello.ticket.view.TicketDialogWindow;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class TicketDialogWindowController {
 
@@ -48,7 +49,13 @@ public class TicketDialogWindowController {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
 
-        Ticket ticket = this.ticketProcessService.getTicketFromPortal().get(0);
+        Ticket ticket = null;
+        try {
+            ticket = this.ticketProcessService.getTicketFromPortal().get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(ticketDialogWindow,e,"Error Reading Portal",JOptionPane.ERROR_MESSAGE);
+        }
 
         this.ticketDialogWindow.getNumberTextField().setText(ticket.getNumber());
         this.ticketDialogWindow.getCategoryTextField().setText(ticket.getCategory());

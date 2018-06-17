@@ -9,5 +9,8 @@
         <module name="TrelloTicket" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="TrelloTicket" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
