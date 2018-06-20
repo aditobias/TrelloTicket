@@ -19,7 +19,8 @@ public class MainWindowView extends JFrame {
     private JPanel ListPanel;
     private JPanel membersPanel;
     private JPanel labelPanel;
-    private JButton button1;
+    private JButton generateReportButton;
+    private JButton emailBAFollowUpButton;
 
     public MainWindowView() {
         setContentPane(mainTabbedPanel);

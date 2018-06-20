@@ -11,10 +11,10 @@ public class App {
 
     public static void main(String[] args) {
 
-//        TicketDialogWindow ticketDialogWindow = new TicketDialogWindow();
-//        TicketDialogWindowController ticketDialogWindowController = new TicketDialogWindowController(ticketDialogWindow);
 
-        MainWindowController mainWindowController = new MainWindowController(new MainWindowView());
+        TicketDialogWindowController ticketDialogWindowController = new TicketDialogWindowController(new TicketDialogWindow());
+
+//        MainWindowController mainWindowController = new MainWindowController(new MainWindowView());
         logger.info("=================Trello Ticket Application Started=================");
 
     }

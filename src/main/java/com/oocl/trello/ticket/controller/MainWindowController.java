@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -116,27 +117,33 @@ public class MainWindowController {
 
     private void execute() {
         //get All tickets
-        List<Ticket> tickets = new ArrayList<>();
+        List<Ticket> portalTickets;
         List<Ticket> newTicket = new ArrayList<>();
 
         try {
-            tickets = ticketProcessService.getTicketFromPortal();
+            portalTickets = ticketProcessService.getTicketFromPortal();
 
             //check cache ticket
+
             if(cachedPortalTickets != null){
                 //compare cacheportal ticket if there is a new ticket
-                for (Ticket ticket : tickets) {
-                    boolean ticketBool = isTicketInCacheTicket(ticket);
-                    if(!ticketBool){
-                        newTicket.add(ticket);
-                    };
+                loop1:for (Ticket portalTicket : portalTickets) {
+                    for (Ticket cachedPortalTicket : cachedPortalTickets) {
+                        if (portalTicket.getNumber().equals(cachedPortalTicket.getNumber())) {
+                            //continue outer loop
+                            continue loop1;
+
+                        }
+                    }
                 }
             }
-            cachedPortalTickets = tickets;
+
+            cachedPortalTickets = portalTickets;
 
 
-            //get tickets in trello
-            //all new ticket create in trello
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(mainWindowView,e,"Error Reading Portal",JOptionPane.ERROR_MESSAGE);

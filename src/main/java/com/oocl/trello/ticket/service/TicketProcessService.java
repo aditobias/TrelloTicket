@@ -23,19 +23,19 @@ public class TicketProcessService {
         List<Ticket> tickets = new ArrayList<>();
 
 
-//            String source = Client.getURLSource(this.config.getUrl());
+            String source = Client.getURLSource(this.config.getUrl());
 
-        File file = new File("sample.txt");
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        StringBuffer stringBuffer = new StringBuffer();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            stringBuffer.append(line);
-            stringBuffer.append("\n");
-        }
-        fileReader.close();
-        String source = stringBuffer.toString();
+//        File file = new File("sample.txt");
+//        FileReader fileReader = new FileReader(file);
+//        BufferedReader bufferedReader = new BufferedReader(fileReader);
+//        StringBuffer stringBuffer = new StringBuffer();
+//        String line;
+//        while ((line = bufferedReader.readLine()) != null) {
+//            stringBuffer.append(line);
+//            stringBuffer.append("\n");
+//        }
+//        fileReader.close();
+//        String source = stringBuffer.toString();
 
         Pattern rowStylePattern = Pattern.compile("\\<tr class=\"RowStyle\">(.*?)\\</tr>");
         Pattern alternatingRowStylePattern = Pattern.compile("\\<tr class=\"AlternatingRowStyle\">(.*?)\\</tr>");
