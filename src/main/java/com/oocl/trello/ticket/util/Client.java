@@ -1,7 +1,6 @@
 package com.oocl.trello.ticket.util;
 
-import com.oocl.trello.ticket.model.Card;
-import org.apache.http.HttpEntity;
+import com.julienvey.trello.domain.Card;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
-    public final static Logger logger = Logger.getLogger(Client.class);
+    private final static Logger logger = Logger.getLogger(Client.class);
 
     public static HttpResponse get(String url) {
         try {
@@ -36,12 +35,12 @@ public class Client {
         return null;
     }
 
-    public void postCreate(String url, Card card) {
+    public void postCreate(Card card) {
 
         try {
             HttpClient httpclient = HttpClients.createDefault();
             HttpPost httppost = new HttpPost("https://api.trello.com/1/cards");
-            List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+            List<NameValuePair> params = new ArrayList<>(2);
             params.add(new BasicNameValuePair("name", card.getName()));
             params.add(new BasicNameValuePair("desc", card.getDesc()));
             params.add(new BasicNameValuePair("pos", "top"));
@@ -51,18 +50,14 @@ public class Client {
             params.add(new BasicNameValuePair("idMembers", "5a0b91fecdacfd463f72d094"));
             params.add(new BasicNameValuePair("idMembers", "56b05db57b949ea7b59ec0ce"));
 
-            params.add(new BasicNameValuePair("urlSource", card.getUrlSource()));
+
             params.add(new BasicNameValuePair("keepFromSource", "all"));
             params.add(new BasicNameValuePair("key", "46308c25cef506f226fe7721d7b2d95f"));
             params.add(new BasicNameValuePair("token", "d2b62245631a432f9507505542dd0ab9992a96171d79b265a0f682e956b7b479"));
             httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
             HttpResponse response1 = httpclient.execute(httppost);
-            HttpEntity entity = response1.getEntity();
 
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            logger.error(e);
-        } catch (ClientProtocolException e) {
+        } catch (UnsupportedEncodingException | ClientProtocolException e) {
             e.printStackTrace();
             logger.error(e);
         } catch (IOException e) {
