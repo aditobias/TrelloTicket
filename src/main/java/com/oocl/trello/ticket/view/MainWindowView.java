@@ -41,6 +41,7 @@ public class MainWindowView extends JFrame {
     }
 
     private JButton testButton;
+    private JButton updateDescriptionButton;
 
     public MainWindowView() {
         setContentPane(mainTabbedPanel);

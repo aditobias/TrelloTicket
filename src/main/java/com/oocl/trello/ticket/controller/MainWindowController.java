@@ -4,11 +4,14 @@ import com.julienvey.trello.domain.*;
 import com.julienvey.trello.impl.TrelloImpl;
 import com.oocl.trello.ticket.model.Config;
 import com.oocl.trello.ticket.model.Ticket;
+import com.oocl.trello.ticket.service.EmailService;
+import com.oocl.trello.ticket.service.ExcelService;
 import com.oocl.trello.ticket.service.TicketProcessService;
 import com.oocl.trello.ticket.util.Util;
 import com.oocl.trello.ticket.view.MainWindowView;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,9 +29,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
-class MainWindowController {
+public class MainWindowController {
 
     private final Config config;
+    private ExcelService excelService;
     private TrelloImpl trelloApi;
     private Board board;
     private MainWindowView mainWindowView;
@@ -42,10 +46,12 @@ class MainWindowController {
     private List<Member> trelloMembers;
     private List<TList> trelloLists;
 
-    MainWindowController(MainWindowView mainWindowView) {
+    public MainWindowController(MainWindowView mainWindowView) {
         this.mainWindowView = mainWindowView;
+
         config = Util.getConfig();
         this.ticketProcessService = new TicketProcessService(config);
+        excelService = new ExcelService();
         if (config != null) {
             trelloApi = new TrelloImpl(config.getKey(), config.getToken());
             board = trelloApi.getBoard(config.getBoard());
@@ -64,6 +70,7 @@ class MainWindowController {
         this.mainWindowView.getStopButton().addActionListener(e -> onStop());
         this.mainWindowView.getGenerateReportButton().addActionListener(e -> onGenerateReportButton());
         this.mainWindowView.getTestButton().addActionListener(e -> onTestButton());
+        this.mainWindowView.getEmailBAFollowUpButton().addActionListener(e -> onSendEmail());
 
         JPanel labelPanel = this.mainWindowView.getLabelPanel();
         JPanel memberPanel = this.mainWindowView.getMembersPanel();
@@ -106,13 +113,34 @@ class MainWindowController {
 
     }
 
+    private void onSendEmail() {
+        EmailService.sendEmail();
+    }
+
+    private void onGenerateReportButton() {
+        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        jfc.setDialogTitle("Choose a directory to save your file: ");
+        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        int returnValue = jfc.showSaveDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            if (jfc.getSelectedFile().isDirectory()) {
+                System.out.println("You selected the directory: " + jfc.getSelectedFile());
+
+                ExcelService.FILE_NAME =jfc.getSelectedFile().toString() + "/MyFirstExcel.xlsx";
+                ExcelService.generateExcel();
+            }
+        }
+
+    }
+
     private void onTestButton() {
         cachedPortalTickets = null;
         execute(true);
 
     }
 
-    private void onGenerateReportButton() {
+    private void onUpdateCardDescription() {
 
 
         List<com.julienvey.trello.domain.Card> cards = board.fetchCards();

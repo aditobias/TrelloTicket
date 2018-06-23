@@ -51,23 +51,16 @@ public class TicketProcessService {
                         ticket.setNumber(number);
                     case 1:
                         ticket.setSeverity(m1.group(1));
-
                     case 2:
                         ticket.setCategory(m1.group(1));
-
                     case 3:
                         ticket.setSubject(m1.group(1));
-
                     case 4:
                         ticket.setStatus(m1.group(1));
-
                     case 5:
                         ticket.setCreateDate(m1.group(1));
-
                     case 6:
                         ticket.setResponseParty(m1.group(1));
-
-
                 }
 
                 index++;
