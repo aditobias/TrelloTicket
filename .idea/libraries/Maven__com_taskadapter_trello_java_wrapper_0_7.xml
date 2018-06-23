@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.taskadapter:trello-java-wrapper:0.7">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/taskadapter/trello-java-wrapper/0.7/trello-java-wrapper-0.7.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/taskadapter/trello-java-wrapper/0.7/trello-java-wrapper-0.7-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/taskadapter/trello-java-wrapper/0.7/trello-java-wrapper-0.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

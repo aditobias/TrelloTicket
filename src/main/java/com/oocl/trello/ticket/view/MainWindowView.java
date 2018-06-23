@@ -32,6 +32,22 @@ public class MainWindowView extends JFrame {
 
     }
 
+    public JButton getGenerateReportButton() {
+        return generateReportButton;
+    }
+
+    public void setGenerateReportButton(JButton generateReportButton) {
+        this.generateReportButton = generateReportButton;
+    }
+
+    public JButton getEmailBAFollowUpButton() {
+        return emailBAFollowUpButton;
+    }
+
+    public void setEmailBAFollowUpButton(JButton emailBAFollowUpButton) {
+        this.emailBAFollowUpButton = emailBAFollowUpButton;
+    }
+
     public JTabbedPane getMainTabbedPanel() {
         return mainTabbedPanel;
     }

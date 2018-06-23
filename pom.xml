@@ -56,6 +56,13 @@
             <artifactId>forms_rt</artifactId>
             <version>7.0.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.taskadapter</groupId>
+            <artifactId>trello-java-wrapper</artifactId>
+            <version>0.7</version>
+        </dependency>
+
+
     </dependencies>
     
 </project>

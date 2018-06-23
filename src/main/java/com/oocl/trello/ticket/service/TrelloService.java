@@ -22,10 +22,6 @@ public class TrelloService {
         this.config = config;
     }
 
-    public void createTicketInTrello(){
-
-    }
-
     public List<Label> getTrelloBoardLabels() {
 
         try {
@@ -168,5 +164,9 @@ public class TrelloService {
         }
 
         return null;
+    }
+
+    public void createCardInTrello(List<Card> newTrelloCards) {
+
     }
 }
