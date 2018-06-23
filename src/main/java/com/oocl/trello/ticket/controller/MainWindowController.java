@@ -17,9 +17,11 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
-public class MainWindowController {
+class MainWindowController {
 
     private final Config config;
     private TrelloImpl trelloApi;
@@ -28,11 +30,17 @@ public class MainWindowController {
     private TicketProcessService ticketProcessService;
     private ScheduledExecutorService exec;
     private List<Ticket> cachedPortalTickets;
+    private ButtonGroup listRadioGroup;
+    private ArrayList<JCheckBox> trelloLabelCheckBoxes;
+    private ArrayList<JCheckBox> trelloMembersCheckBoxes;
+    private List<Label> trelloLabels;
+    private List<Member> trelloMembers;
+    private List<TList> trelloLists;
 
     MainWindowController(MainWindowView mainWindowView) {
         this.mainWindowView = mainWindowView;
         config = Util.getConfig();
-        this.ticketProcessService = new TicketProcessService(config);
+        this.ticketProcessService = new TicketProcessService();
         if (config != null) {
             trelloApi = new TrelloImpl(config.getKey(), config.getToken());
             board = trelloApi.getBoard(config.getBoard());
@@ -43,11 +51,14 @@ public class MainWindowController {
     }
 
     private void initController() {
+        listRadioGroup = new ButtonGroup();
+        trelloLabelCheckBoxes = new ArrayList<>();
+        trelloMembersCheckBoxes = new ArrayList<>();
 
         this.mainWindowView.getRunButton().addActionListener(e -> onRun());
         this.mainWindowView.getStopButton().addActionListener(e -> onStop());
         this.mainWindowView.getGenerateReportButton().addActionListener(e -> onGenerateReportButton());
-
+        this.mainWindowView.getTestButton().addActionListener(e -> onTestButton());
 
         JPanel labelPanel = this.mainWindowView.getLabelPanel();
         JPanel memberPanel = this.mainWindowView.getMembersPanel();
@@ -57,33 +68,41 @@ public class MainWindowController {
         memberPanel.setLayout(new BoxLayout(memberPanel, BoxLayout.PAGE_AXIS));
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.PAGE_AXIS));
 
-        List<TList> trelloLists = board.fetchLists();
+        trelloLists = board.fetchLists();
 
         if (trelloLists != null) {
-            ButtonGroup buttonGroup = new ButtonGroup();
-
             for (TList trelloList : trelloLists) {
                 JRadioButton radio = new JRadioButton(trelloList.getName());
-                buttonGroup.add(radio);
+                radio.setSelected(true);
+                listRadioGroup.add(radio);
                 listPanel.add(radio);
             }
+
         }
-        List<Label> trelloLabels = trelloApi.getBoardLabels(board.getId());
+        trelloLabels = trelloApi.getBoardLabels(board.getId());
 
         if (trelloLabels != null) {
             for (Label trelloLabel : trelloLabels) {
-                labelPanel.add(new JCheckBox(trelloLabel.getName()));
+                JCheckBox newCheckBox =new JCheckBox(String.format("%s(%s)", trelloLabel.getName(), trelloLabel.getColor()));
+                trelloLabelCheckBoxes.add(newCheckBox);
+                labelPanel.add(newCheckBox);
             }
         }
-        List<Membership> trelloMembers = board.getMemberships();
+        trelloMembers = trelloApi.getBoardMembers(board.getId());
 
         if (trelloMembers != null) {
-            for (Membership trelloMember : trelloMembers) {
-                memberPanel.add(new JCheckBox(trelloMember.getIdMember()));
+            for (Member trelloMember : trelloMembers) {
+                JCheckBox newCheckBox = new JCheckBox(String.format("%s(%s)", trelloMember.getFullName(), trelloMember.getUsername()));
+                trelloMembersCheckBoxes.add(newCheckBox);
+                memberPanel.add(newCheckBox);
             }
         }
 
 
+    }
+
+    private void onTestButton() {
+        execute();
     }
 
     private void onGenerateReportButton() {
@@ -145,7 +164,7 @@ public class MainWindowController {
     private void onRun() {
         Runnable executeRunnable = this::startRun;
         exec = Executors.newScheduledThreadPool(1);
-        exec.scheduleAtFixedRate(executeRunnable, 0, 5, TimeUnit.MINUTES);
+        exec.scheduleAtFixedRate(executeRunnable, 0,  Long.parseLong(mainWindowView.getMinutesTextField().getText()), TimeUnit.MINUTES);
         mainWindowView.getRunButton().setEnabled(false);
         mainWindowView.getStopButton().setEnabled(true);
     }
@@ -159,6 +178,7 @@ public class MainWindowController {
     }
 
     private void execute() {
+
         //get All tickets
         List<Ticket> portalTickets;
         List<Ticket> newTickets = new ArrayList<>();
@@ -194,24 +214,34 @@ public class MainWindowController {
             List<Card> trelloCards = board.fetchCards();
             List<Card> newTrelloCards = new ArrayList<>();
 
-            ticketLoop:
-            for (Ticket ticket : newTickets) {
+
+            ticketLoop:for (Ticket ticket : newTickets) {
                 for (Card card : trelloCards) {
                     if (card.getName().contains(ticket.getNumber())) {
                         continue ticketLoop;
                     }
                 }
 
-                newTrelloCards.add(createCard(ticket));
+                newTrelloCards.add(createTicketToCard(ticket));
             }
 
             if (newTrelloCards.size() == 0) {
                 System.out.println("No new trello cards");
                 return;
             }
+            //todo create for execution of test , only 1 card
+//            for (Card newTrelloCard : newTrelloCards) {
+//                trelloApi.createCard(newTrelloCard.getIdList(), newTrelloCard);
+//            }
+            //todo comment this , this is just for testing
+            for (int i = 0; i <1 ; i++) {
+                Card newCard = trelloApi.createCard(newTrelloCards.get(i).getIdList(), newTrelloCards.get(i));
+                List<String> labels = newTrelloCards.get(i).getLabels().stream().map(Label::getColor).collect(Collectors.toList());
+                String[] arrayLabels = labels.toArray(new String[0]);
+                trelloApi.addLabelsToCard(newCard.getId(),arrayLabels);
 
-            newTrelloCards.forEach(newTrelloCard -> System.out.println("Create " + newTrelloCard.getName()));
-            //CREATE CARD IN TRELLO
+            }
+
 
 
         } catch (IOException e) {
@@ -220,14 +250,38 @@ public class MainWindowController {
         }
 
     }
+    private int getSelectedListRadioButtonIndex(ButtonGroup buttonGroup) {
+        int index = 0;
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
 
-    private Card createCard(Ticket ticket) {
+            if (button.isSelected()) {
+                return index;
+            }
+            index++;
+        }
+
+        return index;
+    }
+
+    private Card createTicketToCard(Ticket ticket) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
 
         Card newCard = new Card();
         newCard.setName(ticket.getNumber() + '-' + ticket.getSubject());
         newCard.setDesc(String.format("Level : %s\nTicket Created Date: %s\n%sCard Created:%s\n", ticket.getSeverity(), ticket.getCreateDate(), ticket.getSubject(), dateFormat.format(date)));
+
+        int selectedRadioListIndex = getSelectedListRadioButtonIndex(listRadioGroup);
+        TList selectedList = trelloLists.get(selectedRadioListIndex);
+        List<Label> selectedLabel = IntStream.range(0, trelloLabelCheckBoxes.size()).filter(i -> trelloLabelCheckBoxes.get(i).isSelected()).mapToObj(i -> trelloLabels.get(i)).collect(Collectors.toList());
+        List<Member> selectedMember = IntStream.range(0, trelloMembersCheckBoxes.size()).filter(i -> trelloMembersCheckBoxes.get(i).isSelected()).mapToObj(i -> trelloMembers.get(i)).collect(Collectors.toList());
+
+        newCard.setIdList(selectedList.getId());
+        newCard.setIdMembers(selectedMember.stream().map(Member::getId).collect(Collectors.toList()));
+        newCard.setLabels(selectedLabel);
+
+
         return newCard;
     }
 
