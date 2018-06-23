@@ -1,10 +1,9 @@
 package com.oocl.trello.ticket.service;
 
+import com.oocl.trello.ticket.model.Config;
 import com.oocl.trello.ticket.model.Ticket;
+import com.oocl.trello.ticket.util.Client;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,27 +12,17 @@ import java.util.regex.Pattern;
 
 public class TicketProcessService {
 
-    public TicketProcessService() {
+    private Config config;
+
+    public TicketProcessService(Config config) {
+        this.config = config;
     }
 
     public List<Ticket> getTicketFromPortal() throws IOException {
 
         List<Ticket> tickets = new ArrayList<>();
 
-
-//            String source = Client.getURLSource(this.config.getUrl());
-
-        File file = new File("sample.txt");
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        StringBuilder stringBuffer = new StringBuilder();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            stringBuffer.append(line);
-            stringBuffer.append("\n");
-        }
-        fileReader.close();
-        String source = stringBuffer.toString();
+        String source = Client.getURLSource(this.config.getUrl());
 
         Pattern rowStylePattern = Pattern.compile("<tr class=\"RowStyle\">(.*?)</tr>");
         Pattern alternatingRowStylePattern = Pattern.compile("<tr class=\"AlternatingRowStyle\">(.*?)</tr>");

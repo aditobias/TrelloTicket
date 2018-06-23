@@ -1,7 +1,9 @@
 package com.oocl.trello.ticket.controller;
 
+import com.oocl.trello.ticket.model.Config;
 import com.oocl.trello.ticket.model.Ticket;
 import com.oocl.trello.ticket.service.TicketProcessService;
+import com.oocl.trello.ticket.util.Util;
 import com.oocl.trello.ticket.view.MainWindowView;
 import com.oocl.trello.ticket.view.TicketDialogWindow;
 
@@ -18,7 +20,8 @@ public class TicketDialogWindowController {
 
     public TicketDialogWindowController(TicketDialogWindow ticketDialogWindow) {
         this.ticketDialogWindow = ticketDialogWindow;
-        this.ticketProcessService = new TicketProcessService();
+        Config config = Util.getConfig();
+        this.ticketProcessService = new TicketProcessService(config);
         initController();
     }
 

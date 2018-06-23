@@ -2,10 +2,12 @@ package com.oocl.trello.ticket.controller;
 
 import com.julienvey.trello.domain.*;
 import com.julienvey.trello.impl.TrelloImpl;
-import com.oocl.trello.ticket.model.*;
+import com.oocl.trello.ticket.model.Config;
+import com.oocl.trello.ticket.model.Ticket;
 import com.oocl.trello.ticket.service.TicketProcessService;
 import com.oocl.trello.ticket.util.Util;
 import com.oocl.trello.ticket.view.MainWindowView;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -13,7 +15,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +45,7 @@ class MainWindowController {
     MainWindowController(MainWindowView mainWindowView) {
         this.mainWindowView = mainWindowView;
         config = Util.getConfig();
-        this.ticketProcessService = new TicketProcessService();
+        this.ticketProcessService = new TicketProcessService(config);
         if (config != null) {
             trelloApi = new TrelloImpl(config.getKey(), config.getToken());
             board = trelloApi.getBoard(config.getBoard());
@@ -83,7 +88,7 @@ class MainWindowController {
 
         if (trelloLabels != null) {
             for (Label trelloLabel : trelloLabels) {
-                JCheckBox newCheckBox =new JCheckBox(String.format("%s(%s)", trelloLabel.getName(), trelloLabel.getColor()));
+                JCheckBox newCheckBox = new JCheckBox(String.format("%s(%s)", trelloLabel.getName(), trelloLabel.getColor()));
                 trelloLabelCheckBoxes.add(newCheckBox);
                 labelPanel.add(newCheckBox);
             }
@@ -102,7 +107,9 @@ class MainWindowController {
     }
 
     private void onTestButton() {
-        execute();
+        cachedPortalTickets = null;
+        execute(true);
+
     }
 
     private void onGenerateReportButton() {
@@ -113,12 +120,14 @@ class MainWindowController {
 
         for (com.julienvey.trello.domain.Card card : cards) {
 
-            List<com.julienvey.trello.domain.Action> createdCardActions = trelloApi.getCardActions(card.getId(),new Argument("filter","createCard"));
+            List<com.julienvey.trello.domain.Action> createdCardActions = trelloApi.getCardActions(card.getId(), new Argument("filter", "createCard"));
             List<com.julienvey.trello.domain.Action> updateCardActions = card.getActions();
 
             appendCardDescription(card, createdCardActions, updateCardActions);
 
-            card.update();
+            //todo create custom trello service for update card description only
+//            card.update();
+
         }
     }
 
@@ -133,20 +142,19 @@ class MainWindowController {
         for (com.julienvey.trello.domain.Action action : updatedCardAction) {
             LocalDate date = action.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             long dayDifference = ChronoUnit.DAYS.between(date, LocalDate.now());
-            if(action.getType().equals("updateCard")){
+            if (action.getType().equals("updateCard")) {
                 stringBuffer.append("Moved to ").append(action.getData().getListAfter().getName()).append(" ").append(action.getDate()).append(" (").append(dayDifference).append(" days ago)\n");
             }
-
         }
-        stringBuffer.append("\n=========================================\n");
+        stringBuffer.append("=========================================\n");
         String currentDescription = card.getDesc();
-        int first = currentDescription.indexOf("\n=") ;
-        int last = currentDescription.lastIndexOf("=\n") +2;
+        int first = currentDescription.indexOf("\n=");
+        int last = currentDescription.lastIndexOf("=\n") + 2;
 
-        if(first != -1 && last != -1){
+        if (first != -1 && last != -1) {
             String toBeReplaced = currentDescription.substring(first, last);
-            card.setDesc(currentDescription.replace(toBeReplaced,"") + "\n" + stringBuffer.toString());
-        }else{
+            card.setDesc(currentDescription.replace(toBeReplaced, "") + "\n" + stringBuffer.toString());
+        } else {
             card.setDesc(card.getDesc() + "\n" + stringBuffer.toString());
 
         }
@@ -160,11 +168,10 @@ class MainWindowController {
         mainWindowView.getStopButton().setEnabled(false);
     }
 
-
     private void onRun() {
         Runnable executeRunnable = this::startRun;
         exec = Executors.newScheduledThreadPool(1);
-        exec.scheduleAtFixedRate(executeRunnable, 0,  Long.parseLong(mainWindowView.getMinutesTextField().getText()), TimeUnit.MINUTES);
+        exec.scheduleAtFixedRate(executeRunnable, 0, Long.parseLong(mainWindowView.getMinutesTextField().getText()), TimeUnit.MINUTES);
         mainWindowView.getRunButton().setEnabled(false);
         mainWindowView.getStopButton().setEnabled(true);
     }
@@ -172,36 +179,31 @@ class MainWindowController {
     private void startRun() {
         JTextArea consoleTextArea = mainWindowView.getConsoleTextArea();
         onRunDisplay(consoleTextArea);
-        execute();
+        execute(false);
         consoleTextArea.setText(consoleTextArea.getText() + "Done! \n");
 
     }
 
-    private void execute() {
+    private void execute(boolean isTest) {
 
-        //get All tickets
         List<Ticket> portalTickets;
         List<Ticket> newTickets = new ArrayList<>();
 
 
         try {
             portalTickets = ticketProcessService.getTicketFromPortal();
-            //check cache ticket
-            if (cachedPortalTickets != null) {
-                //compare cacheportal ticket if there is a new ticket
+            if (cachedPortalTickets == null) {
+                newTickets = portalTickets;
+            } else {
                 loop1:
                 for (Ticket portalTicket : portalTickets) {
                     for (Ticket cachedPortalTicket : cachedPortalTickets) {
                         if (portalTicket.getNumber().equals(cachedPortalTicket.getNumber())) {
-                            //continue outer loop
                             continue loop1;
                         }
                     }
                     newTickets.add(portalTicket);
-
                 }
-            } else {
-                newTickets = portalTickets;
             }
 
             cachedPortalTickets = portalTickets;
@@ -215,7 +217,8 @@ class MainWindowController {
             List<Card> newTrelloCards = new ArrayList<>();
 
 
-            ticketLoop:for (Ticket ticket : newTickets) {
+            ticketLoop:
+            for (Ticket ticket : newTickets) {
                 for (Card card : trelloCards) {
                     if (card.getName().contains(ticket.getNumber())) {
                         continue ticketLoop;
@@ -229,30 +232,38 @@ class MainWindowController {
                 System.out.println("No new trello cards");
                 return;
             }
-            //todo create for execution of test , only 1 card
-//            for (Card newTrelloCard : newTrelloCards) {
-//                trelloApi.createCard(newTrelloCard.getIdList(), newTrelloCard);
-//            }
-            //todo comment this , this is just for testing
-            for (int i = 0; i <1 ; i++) {
-                Card newCard = trelloApi.createCard(newTrelloCards.get(i).getIdList(), newTrelloCards.get(i));
-                List<String> labels = newTrelloCards.get(i).getLabels().stream().map(Label::getColor).collect(Collectors.toList());
-                String[] arrayLabels = labels.toArray(new String[0]);
-                trelloApi.addLabelsToCard(newCard.getId(),arrayLabels);
 
+            if(isTest){
+                testCreateCard(newTrelloCards);
+            }else{
+                createAllNewCardToTrello(newTrelloCards);
             }
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(mainWindowView, e, "Error Reading Portal", JOptionPane.ERROR_MESSAGE);
         }
 
     }
+
+    private void createAllNewCardToTrello(List<Card> newTrelloCards) {
+        for (Card newTrelloCard : newTrelloCards) {
+            Card newCard = trelloApi.createCard(newTrelloCard.getIdList(), newTrelloCard);
+            String[] arrayLabels = newTrelloCard.getLabels().stream().map(Label::getColor).toArray(String[]::new);
+            trelloApi.addLabelsToCard(newCard.getId(), arrayLabels);
+            trelloApi.addUrlAttachmentToCard(newCard.getId(), newTrelloCards.get(0).getUrl());
+        }
+    }
+
+    private void testCreateCard(List<Card> newTrelloCards) {
+        Card newCard = trelloApi.createCard(newTrelloCards.get(0).getIdList(), newTrelloCards.get(0));
+        String[] arrayLabels = newTrelloCards.get(0).getLabels().stream().map(Label::getColor).toArray(String[]::new);
+        trelloApi.addLabelsToCard(newCard.getId(), arrayLabels);
+        trelloApi.addUrlAttachmentToCard(newCard.getId(), newTrelloCards.get(0).getUrl());
+    }
+
     private int getSelectedListRadioButtonIndex(ButtonGroup buttonGroup) {
         int index = 0;
-        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements(); ) {
             AbstractButton button = buttons.nextElement();
 
             if (button.isSelected()) {
@@ -270,7 +281,7 @@ class MainWindowController {
 
         Card newCard = new Card();
         newCard.setName(ticket.getNumber() + '-' + ticket.getSubject());
-        newCard.setDesc(String.format("Level : %s\nTicket Created Date: %s\n%sCard Created:%s\n", ticket.getSeverity(), ticket.getCreateDate(), ticket.getSubject(), dateFormat.format(date)));
+        newCard.setDesc(String.format("Level : %s\nTicket Created Date: %s\n%s\nCard Created:%s\n", ticket.getSeverity(), ticket.getCreateDate(), ticket.getSubject(), dateFormat.format(date)));
 
         int selectedRadioListIndex = getSelectedListRadioButtonIndex(listRadioGroup);
         TList selectedList = trelloLists.get(selectedRadioListIndex);
@@ -280,7 +291,7 @@ class MainWindowController {
         newCard.setIdList(selectedList.getId());
         newCard.setIdMembers(selectedMember.stream().map(Member::getId).collect(Collectors.toList()));
         newCard.setLabels(selectedLabel);
-
+        newCard.setUrl(ticket.getLink());
 
         return newCard;
     }

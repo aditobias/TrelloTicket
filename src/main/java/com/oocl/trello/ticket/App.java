@@ -8,10 +8,7 @@ public class App {
     private final static Logger logger = Logger.getLogger(App.class);
 
     public static void main(String[] args) {
-
         new TicketDialogWindowController(new TicketDialogWindow());
-
-//        MainWindowController mainWindowController = new MainWindowController(new MainWindowView());
         logger.info("=================Trello Ticket Application Started=================");
 
     }
