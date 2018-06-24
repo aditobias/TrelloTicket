@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
 
 public class MainWindowController {
 
-    private final Config config;
+    private Config config;
     private TrelloImpl trelloApi;
     private Board board;
     private MainWindowView mainWindowView;
@@ -46,18 +46,25 @@ public class MainWindowController {
     private List<TList> trelloLists;
 
     public MainWindowController(MainWindowView mainWindowView) {
-        this.mainWindowView = mainWindowView;
 
-        config = Util.getConfig();
-        this.ticketProcessService = new TicketProcessService(config);
-        if (config != null) {
-            trelloApi = new TrelloImpl(config.getKey(), config.getToken());
-            board = trelloApi.getBoard(config.getBoard());
+        try {
+            this.mainWindowView = mainWindowView;
+
+            config = Util.getConfig();
+            this.ticketProcessService = new TicketProcessService(config);
+            if (config != null) {
+                trelloApi = new TrelloImpl(config.getKey(), config.getToken());
+                board = trelloApi.getBoard(config.getBoard());
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(mainWindowView, e, "Trello Authorization Error!", JOptionPane.ERROR_MESSAGE);
         }
-
 
         initController();
     }
+
 
     private void initController() {
         listRadioGroup = new ButtonGroup();
@@ -126,7 +133,7 @@ public class MainWindowController {
             if (jfc.getSelectedFile().isDirectory()) {
                 System.out.println("You selected the directory: " + jfc.getSelectedFile());
 
-                ExcelService.FILE_NAME =jfc.getSelectedFile().toString() + "/MyFirstExcel.xlsx";
+                ExcelService.FILE_NAME = jfc.getSelectedFile().toString() + "/MyFirstExcel.xlsx";
                 ExcelService.generateExcel();
             }
         }
@@ -260,9 +267,9 @@ public class MainWindowController {
                 return;
             }
 
-            if(isTest){
+            if (isTest) {
                 testCreateCard(newTrelloCards);
-            }else{
+            } else {
                 createAllNewCardToTrello(newTrelloCards);
             }
         } catch (IOException e) {

@@ -14,7 +14,6 @@ public class EmailService {
     public static void sendEmail(){
 
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", true);
         prop.put("mail.smtp.starttls.enable", "true");
         prop.put("mail.smtp.host", "smtp.mailtrap.io");
         prop.put("mail.smtp.port", "2525");
