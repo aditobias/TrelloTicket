@@ -17,6 +17,8 @@ public class MainWindowView extends JFrame {
     private JPanel labelPanel;
     private JButton generateReportButton;
     private JButton emailBAFollowUpButton;
+    private JButton testButton;
+    private JButton updateDescriptionButton;
 
     public JTabbedPane getMainTabbedPanel() {
         return mainTabbedPanel;
@@ -40,8 +42,7 @@ public class MainWindowView extends JFrame {
         return testButton;
     }
 
-    private JButton testButton;
-    private JButton updateDescriptionButton;
+
 
     public MainWindowView() {
         setContentPane(mainTabbedPanel);
@@ -83,7 +84,9 @@ public class MainWindowView extends JFrame {
         return membersPanel;
     }
 
-
+    public JButton getUpdateDescriptionButton() {
+        return updateDescriptionButton;
+    }
 
     public JPanel getLabelPanel() {
         return labelPanel;

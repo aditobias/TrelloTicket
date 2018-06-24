@@ -32,7 +32,6 @@ import java.util.stream.IntStream;
 public class MainWindowController {
 
     private final Config config;
-    private ExcelService excelService;
     private TrelloImpl trelloApi;
     private Board board;
     private MainWindowView mainWindowView;
@@ -51,7 +50,6 @@ public class MainWindowController {
 
         config = Util.getConfig();
         this.ticketProcessService = new TicketProcessService(config);
-        excelService = new ExcelService();
         if (config != null) {
             trelloApi = new TrelloImpl(config.getKey(), config.getToken());
             board = trelloApi.getBoard(config.getBoard());
@@ -71,6 +69,7 @@ public class MainWindowController {
         this.mainWindowView.getGenerateReportButton().addActionListener(e -> onGenerateReportButton());
         this.mainWindowView.getTestButton().addActionListener(e -> onTestButton());
         this.mainWindowView.getEmailBAFollowUpButton().addActionListener(e -> onSendEmail());
+        this.mainWindowView.getUpdateDescriptionButton().addActionListener(e -> onUpdateCardDescription());
 
         JPanel labelPanel = this.mainWindowView.getLabelPanel();
         JPanel memberPanel = this.mainWindowView.getMembersPanel();
