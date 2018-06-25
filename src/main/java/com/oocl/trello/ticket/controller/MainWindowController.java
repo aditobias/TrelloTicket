@@ -4,10 +4,10 @@ import com.julienvey.trello.domain.*;
 import com.julienvey.trello.impl.TrelloImpl;
 import com.oocl.trello.ticket.model.Config;
 import com.oocl.trello.ticket.model.Ticket;
-import com.oocl.trello.ticket.service.EmailService;
 import com.oocl.trello.ticket.service.ExcelService;
 import com.oocl.trello.ticket.service.TicketProcessService;
 import com.oocl.trello.ticket.util.Util;
+import com.oocl.trello.ticket.view.EmailDialogWindow;
 import com.oocl.trello.ticket.view.MainWindowView;
 
 import javax.swing.*;
@@ -18,10 +18,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -118,9 +115,9 @@ public class MainWindowController {
 
 
     }
-
     private void onSendEmail() {
-        EmailService.sendEmail();
+        new EmailDialogController(new EmailDialogWindow(), board);
+        //EmailService.sendEmail();
     }
 
     private void onGenerateReportButton() {
