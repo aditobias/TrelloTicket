@@ -3,9 +3,12 @@ package com.oocl.trello.ticket.controller;
 import com.julienvey.trello.domain.*;
 import com.julienvey.trello.impl.TrelloImpl;
 import com.oocl.trello.ticket.model.Config;
+import com.oocl.trello.ticket.model.TCard;
+import com.oocl.trello.ticket.model.TLabel;
 import com.oocl.trello.ticket.model.Ticket;
 import com.oocl.trello.ticket.service.ExcelService;
 import com.oocl.trello.ticket.service.TicketProcessService;
+import com.oocl.trello.ticket.service.TrelloService;
 import com.oocl.trello.ticket.util.Util;
 import com.oocl.trello.ticket.view.EmailDialogWindow;
 import com.oocl.trello.ticket.view.MainWindowView;
@@ -38,9 +41,10 @@ public class MainWindowController {
     private ButtonGroup listRadioGroup;
     private ArrayList<JCheckBox> trelloLabelCheckBoxes;
     private ArrayList<JCheckBox> trelloMembersCheckBoxes;
-    private List<Label> trelloLabels;
+    private List<TLabel> trelloLabels;
     private List<Member> trelloMembers;
     private List<TList> trelloLists;
+    private TrelloService trelloService;
 
     public MainWindowController(MainWindowView mainWindowView) {
 
@@ -51,6 +55,7 @@ public class MainWindowController {
             this.ticketProcessService = new TicketProcessService(config);
             if (config != null) {
                 trelloApi = new TrelloImpl(config.getKey(), config.getToken());
+                trelloService = new TrelloService(config.getKey(), config.getToken());
                 board = trelloApi.getBoard(config.getBoard());
 
             }
@@ -94,7 +99,7 @@ public class MainWindowController {
             }
 
         }
-        trelloLabels = trelloApi.getBoardLabels(board.getId());
+        trelloLabels = trelloService.getBoardTLabels(board.getId());
 
         if (trelloLabels != null) {
             for (Label trelloLabel : trelloLabels) {
@@ -159,6 +164,7 @@ public class MainWindowController {
             //todo create custom trello service for update card description only
 //            card.update();
 
+
         }
     }
 
@@ -177,7 +183,7 @@ public class MainWindowController {
                 stringBuffer.append("Moved to ").append(action.getData().getListAfter().getName()).append(" ").append(action.getDate()).append(" (").append(dayDifference).append(" days ago)\n");
             }
         }
-        stringBuffer.append("=========================================\n");
+        stringBuffer.append("\n=========================================\n");
         String currentDescription = card.getDesc();
         int first = currentDescription.indexOf("\n=");
         int last = currentDescription.lastIndexOf("=\n") + 2;
