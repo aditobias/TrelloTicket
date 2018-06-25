@@ -57,7 +57,7 @@ public class MainWindowController {
                 trelloApi = new TrelloImpl(config.getKey(), config.getToken());
                 trelloService = new TrelloService(config.getKey(), config.getToken());
                 board = trelloApi.getBoard(config.getBoard());
-
+                this.mainWindowView.setTitle("Trello Ticket : " + board.getName() + " Board");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -215,8 +215,13 @@ public class MainWindowController {
 
     private void startRun() {
         JTextArea consoleTextArea = mainWindowView.getConsoleTextArea();
-        onRunDisplay(consoleTextArea);
-        execute(false);
+
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure you want to run it in "+ board.getName()+" board?","Warning",JOptionPane.YES_NO_OPTION);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            onRunDisplay(consoleTextArea);
+            execute(false);
+        }
+
         consoleTextArea.setText(consoleTextArea.getText() + "Done! \n");
 
     }
