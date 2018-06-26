@@ -45,6 +45,7 @@ public class MainWindowController {
     private List<Member> trelloMembers;
     private List<TList> trelloLists;
     private TrelloService trelloService;
+    private JTextArea consoleTextArea;
 
     public MainWindowController(MainWindowView mainWindowView) {
 
@@ -57,6 +58,7 @@ public class MainWindowController {
                 trelloApi = new TrelloImpl(config.getKey(), config.getToken());
                 trelloService = new TrelloService(config.getKey(), config.getToken());
                 board = trelloApi.getBoard(config.getBoard());
+                consoleTextArea = mainWindowView.getConsoleTextArea();
                 this.mainWindowView.setTitle("Trello Ticket : " + board.getName() + " Board");
             }
         } catch (Exception e) {
@@ -83,6 +85,7 @@ public class MainWindowController {
         JPanel labelPanel = this.mainWindowView.getLabelPanel();
         JPanel memberPanel = this.mainWindowView.getMembersPanel();
         JPanel listPanel = this.mainWindowView.getListPanel();
+
 
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
         memberPanel.setLayout(new BoxLayout(memberPanel, BoxLayout.PAGE_AXIS));
@@ -198,32 +201,31 @@ public class MainWindowController {
     }
 
     private void onStop() {
-        exec.shutdown();
-        JTextArea consoleTextArea = mainWindowView.getConsoleTextArea();
-        consoleTextArea.setText(consoleTextArea.getText() + "Tool already SHUTDOWN" + "\n");
+        exec.shutdownNow();
+        logInConsole("Tool SHUTDOWN");
         mainWindowView.getRunButton().setEnabled(true);
         mainWindowView.getStopButton().setEnabled(false);
     }
 
-    private void onRun() {
-        Runnable executeRunnable = this::startRun;
-        exec = Executors.newScheduledThreadPool(1);
-        exec.scheduleAtFixedRate(executeRunnable, 0, Long.parseLong(mainWindowView.getMinutesTextField().getText()), TimeUnit.MINUTES);
-        mainWindowView.getRunButton().setEnabled(false);
-        mainWindowView.getStopButton().setEnabled(true);
+    private void logInConsole(String message) {
+        consoleTextArea.setText(consoleTextArea.getText() + message + "\n");
     }
 
-    private void startRun() {
-        JTextArea consoleTextArea = mainWindowView.getConsoleTextArea();
-
+    private void onRun() {
         int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure you want to run it in "+ board.getName()+" board?","Warning",JOptionPane.YES_NO_OPTION);
         if(dialogResult == JOptionPane.YES_OPTION){
             onRunDisplay(consoleTextArea);
-            execute(false);
+            mainWindowView.getRunButton().setEnabled(false);
+            mainWindowView.getStopButton().setEnabled(true);
+            Runnable executeRunnable = this::startRun;
+            exec = Executors.newScheduledThreadPool(1);
+            exec.scheduleAtFixedRate(executeRunnable, 0, Long.parseLong(mainWindowView.getMinutesTextField().getText()), TimeUnit.MINUTES);
         }
+    }
 
-        consoleTextArea.setText(consoleTextArea.getText() + "Done! \n");
-
+    private void startRun() {
+        execute(false);
+        logInConsole("Done!");
     }
 
     private void execute(boolean isTest) {
@@ -251,8 +253,8 @@ public class MainWindowController {
             cachedPortalTickets = portalTickets;
 
             if (newTickets.size() == 0) {
-                System.out.println("No new ticket in portal");
-                return;
+                logInConsole("No new ticket in portal");
+
             }
 
             List<Card> trelloCards = board.fetchCards();
@@ -271,7 +273,7 @@ public class MainWindowController {
             }
 
             if (newTrelloCards.size() == 0) {
-                System.out.println("No new trello cards");
+                logInConsole("No new trello cards");
                 return;
             }
 
@@ -292,7 +294,8 @@ public class MainWindowController {
             Card newCard = trelloApi.createCard(newTrelloCard.getIdList(), newTrelloCard);
             String[] arrayLabels = newTrelloCard.getLabels().stream().map(Label::getColor).toArray(String[]::new);
             trelloApi.addLabelsToCard(newCard.getId(), arrayLabels);
-            trelloApi.addUrlAttachmentToCard(newCard.getId(), newTrelloCards.get(0).getUrl());
+            trelloApi.addUrlAttachmentToCard(newCard.getId(), newTrelloCard.getUrl());
+            logInConsole("Created : " + newCard.getName() + " Link : " + newCard.getUrl());
         }
     }
 
@@ -301,6 +304,7 @@ public class MainWindowController {
         String[] arrayLabels = newTrelloCards.get(0).getLabels().stream().map(Label::getColor).toArray(String[]::new);
         trelloApi.addLabelsToCard(newCard.getId(), arrayLabels);
         trelloApi.addUrlAttachmentToCard(newCard.getId(), newTrelloCards.get(0).getUrl());
+        logInConsole("Created : " + newCard.getName());
     }
 
     private int getSelectedListRadioButtonIndex(ButtonGroup buttonGroup) {
@@ -340,16 +344,13 @@ public class MainWindowController {
 
 
     private void onRunDisplay(JTextArea consoleTextArea) {
-        consoleTextArea.setText(consoleTextArea.getText() + "================" + "\n");
-        consoleTextArea.setText(consoleTextArea.getText() + "KEY : " + config.getKey() + "\n");
-        consoleTextArea.setText(consoleTextArea.getText() + "TOKEN : " + config.getToken() + "\n");
-        consoleTextArea.setText(consoleTextArea.getText() + "URL : " + config.getUrl() + "\n");
-        consoleTextArea.setText(consoleTextArea.getText() + "BOARD : " + config.getBoard() + "\n");
-        consoleTextArea.setText(consoleTextArea.getText() + "================" + "\n");
-
-        consoleTextArea.setText(consoleTextArea.getText() + "Running now! \n");
-        System.out.println("test");
+        logInConsole("================");
+        logInConsole("KEY :" + config.getKey());
+        logInConsole("TOKEN : " + config.getToken());
+        logInConsole("URL : " + config.getUrl());
+        logInConsole("BOARD : " + config.getBoard());
+        logInConsole("================");
+        logInConsole("Running now!");
     }
-
 
 }
