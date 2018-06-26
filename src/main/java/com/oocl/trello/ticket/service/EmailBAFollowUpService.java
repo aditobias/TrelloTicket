@@ -1,12 +1,5 @@
 package com.oocl.trello.ticket.service;
 
-import com.julienvey.trello.domain.Board;
-import com.julienvey.trello.domain.Card;
-import com.julienvey.trello.domain.Label;
-import com.julienvey.trello.impl.TrelloImpl;
-import com.oocl.trello.ticket.model.Config;
-import com.oocl.trello.ticket.util.Util;
-
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
